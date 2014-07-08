@@ -60,7 +60,7 @@ class Dummy extends CustomOperatorProcessor
         if (($c = count($operands)) > 1) {
             $msg = "The 'oat.kutimo.model.Dummy' custom operator takes only one sub-expression as a parameter, ${c} given.";
             throw new OperatorProcessingException($msg, $this, OperatorProcessingException::TOO_MUCH_OPERANDS);
-        } elseif (($c = count($operands)) === 0) {
+        } elseif ($c === 0) {
             $msg = "The 'oat.kutimo.model.Dummy' custom operator takes one sub-expression as a parameter, none given.";
             throw new OperatorProcessingException($msg, $this, OperatorProcessingException::NOT_ENOUGH_OPERANDS);
         }
