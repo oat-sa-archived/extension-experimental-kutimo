@@ -21,52 +21,95 @@
 require_once dirname(__FILE__) . '/../../../tao/test/TaoPhpUnitTestRunner.php';
 include_once dirname(__FILE__) . '/../../includes/raw_start.php';
 
-use qtism\common\datatypes\QtiDatatype;
 use qtism\common\datatypes\String;
 use qtism\common\datatypes\Identifier;
 use qtism\common\datatypes\Float;
+use qtism\common\enums\BaseType;
 use qtism\data\expressions\ExpressionCollection;
 use qtism\data\expressions\Variable;
 use qtism\data\expressions\operators\CustomOperator;
 use qtism\runtime\expressions\operators\OperandsCollection;
-use qtism\runtime\common\State;
+use qtism\runtime\expressions\operators\OperatorProcessingException;
+use qtism\runtime\common\MultipleContainer;
 use oat\kutimo\model\Dummy;
 
 class DummyTest extends TaoPhpUnitTestRunner 
 {
-    private $state;
-    
-    private function getState()
-    {
-        return $this->state;
-    }
-    
-    private function setState(State $state)
-    {
-        return $this->state;
-    }
-    
-    public function tearDown()
-    {
-        parent::tearDown();
-        $this->setState(new State());
-    }
     
     /**
      * @dataProvider dummyProvider
      * 
-     * @param QtiDatatype $response
+     * @param mixed $response
      * @param Float $expected
      */
-    public function testDummy(QtiDatatype $response, Float $expected)
+    public function testDummy($response, Float $expected)
     {
-        $state = $this->getState();
         $expression = self::createFakeExpression();
         $operands = new OperandsCollection(array($response));
         $processor = new Dummy($expression, $operands);
         $result = $processor->process();
         
         $this->assertTrue($result->equals($expected));
+    }
+    
+    public function testNotEnoughOperands()
+    {
+        $expression = self::createFakeExpression();
+        $operands = new OperandsCollection();
+        $processor = new Dummy($expression, $operands);
+        
+        $this->setExpectedException(
+            'qtism\\runtime\\expressions\\operators\\OperatorProcessingException',
+            "The 'oat.kutimo.model.Dummy' custom operator takes one sub-expression as a parameter, none given.",
+            OperatorProcessingException::NOT_ENOUGH_OPERANDS
+        );
+        
+        $processor->process();
+    }
+    
+    public function testTooMuchOperands()
+    {
+        $expression = self::createFakeExpression();
+        $operands = new OperandsCollection(array(new String('String1'), new String('String2')));
+        $processor = new Dummy($expression, $operands);
+        
+        $this->setExpectedException(
+            'qtism\\runtime\\expressions\\operators\\OperatorProcessingException',
+            "The 'oat.kutimo.model.Dummy' custom operator takes only one sub-expression as a parameter, 2 given.",
+            OperatorProcessingException::TOO_MUCH_OPERANDS
+        );
+        
+        $processor->process();
+    }
+    
+    public function testWrongCardinality()
+    {
+        $expression = self::createFakeExpression();
+        $operands = new OperandsCollection(array(new MultipleContainer(BaseType::STRING)));
+        $processor = new Dummy($expression, $operands);
+        
+        $this->setExpectedException(
+            'qtism\\runtime\\expressions\\operators\\OperatorProcessingException',
+            "The 'oat.kutimo.model.Dummy' custom operator only accept a first operand with single cardinality.",
+            OperatorProcessingException::WRONG_CARDINALITY
+        );
+        
+        $processor->process();
+    }
+    
+    public function testWrongBaseType()
+    {
+        $expression = self::createFakeExpression();
+        $operands = new OperandsCollection(array(new Float(13.37)));
+        $processor = new Dummy($expression, $operands);
+        
+        $this->setExpectedException(
+            'qtism\\runtime\\expressions\\operators\\OperatorProcessingException',
+            "The 'oat.kutimo.model.Dummy' custom operator only accept a first operand with string or identifier baseType.",
+            OperatorProcessingException::WRONG_BASETYPE
+        );
+        
+        $processor->process();
     }
     
     public function dummyProvider()
@@ -77,6 +120,7 @@ class DummyTest extends TaoPhpUnitTestRunner
         return array(
             array(new String(''), $zero),
             array(new Identifier(''), $zero),
+            array(null, $zero),
             array(new String('My candidate response...'), $one),
             array(new Identifier('CHOICE1'), $one)
         );

@@ -58,10 +58,10 @@ class Dummy extends CustomOperatorProcessor
         
         // The operator only accepts one operand.
         if (($c = count($operands)) > 1) {
-            $msg = "The 'oat.kutimo.Dummy' custom operator takes only one sub-expression as a parameter, ${c} given.";
+            $msg = "The 'oat.kutimo.model.Dummy' custom operator takes only one sub-expression as a parameter, ${c} given.";
             throw new OperatorProcessingException($msg, $this, OperatorProcessingException::TOO_MUCH_OPERANDS);
         } elseif (($c = count($operands)) === 0) {
-            $msg = "The 'oat.kutimo.Dummy' custom operator takes one sub-expression as a parameter, none given.";
+            $msg = "The 'oat.kutimo.model.Dummy' custom operator takes one sub-expression as a parameter, none given.";
             throw new OperatorProcessingException($msg, $this, OperatorProcessingException::NOT_ENOUGH_OPERANDS);
         }
         
@@ -74,10 +74,10 @@ class Dummy extends CustomOperatorProcessor
         
         // The operand must have a single cardinality and have a string baseType.
         if ($operand->getCardinality() !== Cardinality::SINGLE) {
-            $msg = "The first operand's cardinality must be single.";
+            $msg = "The 'oat.kutimo.model.Dummy' custom operator only accept a first operand with single cardinality.";
             throw new OperatorProcessingException($msg, $this, OperatorProcessingException::WRONG_CARDINALITY);
         } elseif (($c = $operand->getBaseType()) !== BaseType::STRING && $c !== BaseType::IDENTIFIER) {
-            $msg = "The first operand's baseType must be string or identifier.";
+            $msg = "The 'oat.kutimo.model.Dummy' custom operator only accept a first operand with string or identifier baseType.";
             throw new OperatorProcessingException($msg, $this, OperatorProcessingException::WRONG_BASETYPE);
         }
         
