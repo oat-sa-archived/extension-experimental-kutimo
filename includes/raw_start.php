@@ -18,8 +18,7 @@
  *               
  * 
  */
-?>
-<?php
+
 /**
  * RAW Bootstraping
  * 
