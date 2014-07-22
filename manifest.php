@@ -31,7 +31,11 @@ return array(
 	'requires' => array(
 	    'taoQtiCommon' => '>=2.6'
 	),
-	'install' => array(),
+	'install' => array(
+	    'php' => array(
+	        dirname(__FILE__) . '/scripts/install/configure.php'
+	    ),
+	),
     'local'	=> array(),
     'autoload' => array (
         'psr-4' => array(
