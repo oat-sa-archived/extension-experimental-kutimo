@@ -56,7 +56,7 @@ class Korekton extends CustomOperatorProcessor
     public function __construct(Expression $expression, OperandsCollection $operands)
     {
         parent::__construct($expression, $operands);
-        $this->setExtension(common_ext_ExtensionsManager::singleton()->getExtensionById('ekstera'));
+        $this->setExtension(common_ext_ExtensionsManager::singleton()->getExtensionById('kutimo'));
     }
     
     protected function getExtension()
@@ -121,7 +121,6 @@ class Korekton extends CustomOperatorProcessor
         curl_setopt($curl, CURLOPT_USERPWD, $this->getUser() . ':' . $this->getPassword());
         
         $response = curl_exec($curl);
-        
         curl_close($curl);
 
         return new Float($this->getScoreFromResponse($response));
